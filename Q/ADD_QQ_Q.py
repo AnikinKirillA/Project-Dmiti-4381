@@ -11,7 +11,7 @@ def ADD_QQ_Q(A: Rational, B: Rational) -> Rational:
     multiplyerA = lcm // A.denominator
     multiplyerB = lcm // B.denominator
 
-    # Умножаем числители на дополнительные множители
+    # Умножаем числители на дополнительные множители и складываем
     newNumerator = A.numerator * multiplyerA + B.numerator * multiplyerB
 
     # Создаем результирующую дробь
