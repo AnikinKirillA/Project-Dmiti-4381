@@ -1,7 +1,7 @@
 def __add__(self, other):
     """
     Сделал: Соколовский Артём
-    Сложение натуральных чисел: self + other.
+    Сложение двух натуральных чисел: self + other.
     """
     A = self.A[::-1]
     B = other.A[::-1]
@@ -19,4 +19,4 @@ def __add__(self, other):
         res.append(carry)
 
     res.reverse()
-    return res
+    return Natural(len(res) - 1, res)

@@ -1,9 +1,9 @@
 def __sub__(self, other):
     """
     Сделал: Соколовский Артём
-    Вычитание натуральных чисел: self - other (self >= other).
+    Вычитание натуральных чисел: self - other (при self >= other).
     """
-    if self.COM_NN_D(other) == 1:
+    if self.COM_NN_D(other) == -1:
         raise ValueError("SUB_NN_N: self < other")
 
     A = self.A[::-1]
@@ -26,4 +26,4 @@ def __sub__(self, other):
         res.pop()
 
     res.reverse()
-    return res
+    return Natural(len(res) - 1, res)
