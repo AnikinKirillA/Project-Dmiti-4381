@@ -1,19 +1,27 @@
 def __truediv__(self, other):
     """
     Сделал: Соколовский Артём
-    Деление целых чисел: self / other.
+    Деление целых чисел: self / other (целая часть, округление к нулю).
     """
+
+    # Проверка на ноль
     if all(d == 0 for d in other.A):
-        raise ZeroDivisionError("DIV_ZZ_Z: деление на ноль")
+        raise ZeroDivisionError("Деление на ноль")
 
-    A = int(''.join(map(str, self.A))) if self.A else 0
-    B = int(''.join(map(str, other.A))) if other.A else 0
-
-    q_abs = abs(A) // abs(B)
+    # Определяем знак результата
     result_sign = 1 if self.s != other.s else 0
 
-    if q_abs == 0:
+    # Берём модули чисел
+    abs_self = ABS_Z_N(self)   
+    abs_other = ABS_Z_N(other) 
+
+    # Проверка, если |a| < |b| → результат = 0
+    if COM_NN_D(abs_self, abs_other) == -1:
         return Integer(0, 0, [0])
 
-    digits = [int(ch) for ch in str(q_abs)]
-    return Integer(result_sign, len(digits) - 1, digits)
+    # Выполняем деление как для натуральных
+    quotient_nat = DIV_NN_N(abs_self, abs_other)
+
+    # Формируем результат
+    return Integer(result_sign, quotient_nat.len, quotient_nat.A)
+

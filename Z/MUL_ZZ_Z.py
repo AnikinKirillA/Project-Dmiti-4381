@@ -3,14 +3,25 @@ def __mul__(self, other):
     Сделал: Соколовский Артём
     Умножение целых чисел: self * other.
     """
-    result_sign = 1 if self.s != other.s else 0
+    sign = 1 if self.s != other.s else 0  # знак результата
 
-    A = int(''.join(map(str, self.A))) if self.A else 0
-    B = int(''.join(map(str, other.A))) if other.A else 0
-    product = A * B
+    A = self.A[::-1]
+    B = other.A[::-1]
+    res = [0] * (len(A) + len(B))
 
-    if product == 0:
-        return Integer(0, 0, [0])
+    for i in range(len(A)):
+        carry = 0
+        for j in range(len(B)):
+            prod = res[i + j] + A[i] * B[j] + carry
+            res[i + j] = prod % 10
+            carry = prod // 10
+        if carry:
+            res[i + len(B)] += carry
 
-    digits = [int(ch) for ch in str(abs(product))]
-    return Integer(result_sign, len(digits) - 1, digits)
+    # убираем ведущие нули
+    while len(res) > 1 and res[-1] == 0:
+        res.pop()
+
+    res.reverse()
+    return Integer(sign, len(res) - 1, res)
+
