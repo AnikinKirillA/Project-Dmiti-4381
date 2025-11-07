@@ -1,9 +1,9 @@
-def ABS_Z_Z(Z: Integer) -> Integer:
+def ABS_Z_Z(self):
     """
     Сделала: Имховик Наталья
     Определение абсолютной величины числа
     Возвращает целое
     """
     # Устанавливаем знак +
-    Z.s = 0
-    return Z
+    self.s = 0
+    return self

@@ -1,4 +1,4 @@
-def TRANS_N_Z(N: Natural) -> Integer:
+def TRANS_N_Z(N: Natural):
     """
     Сделала: Имховик Наталья
     Преобразование натурального в целое
