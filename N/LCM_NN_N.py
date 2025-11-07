@@ -5,5 +5,5 @@ def LCM_NN_N(self, other):
     Используем НОК(a, b) = (a * b) / НОД(a, b)
     Возвращает натуральное
     """
-    gcd = GCF_NN_N(self, other)
+    gcd = self.GCF_NN_N(other)
     return self * other // gcd
