@@ -21,7 +21,7 @@ def GCF_PP_P(self, other):
     # Нормализация: свободный член равен 1
     if A.C != []:
         # normalizer = 1 / (свободный член)
-        normalizer = Rational(Integer(0, 1, [1]), Natural(1, [1])) / A.LED_P_Q()
+        normalizer = Rational(Integer(0, 0, [1]), Natural(0, [1])) / A.LED_P_Q()
         A = A * normalizer
 
     return A
