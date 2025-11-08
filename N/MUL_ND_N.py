@@ -4,7 +4,8 @@ def MUL_ND_N(self, int):
     Умножение натурального числа на цифру
     """
     
-    rev_num = self.A.copy()[::-1] # Запись числа справа налево
+    """ Запись числа справа налево """
+    rev_num = self.A.copy()[::-1]
     
     """ Домножение каждого разряда на цифру """
     for i in range(self.len + 1): 
@@ -23,4 +24,4 @@ def MUL_ND_N(self, int):
                 rev_num.append(rev_num[i] // 10)
             rev_num[i] %= 10
     
-    return rev_num[::-1]
+    return Natural(len(rev_num)-1, rev_num[::-1])
