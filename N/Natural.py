@@ -55,24 +55,28 @@ class Natural:
         return not(self.len == 0 and self.A[0] == 0)
 
     def ADD_1N_N(self):
-        """
-        Выполнил: Сурин Максим
+        """ 
+        Выполнил: Сурин Максим 
         Добавление 1 к натуральному числу
         """
-
-        rev_num = self.A.reverse()  # Запись числа справа налево
-        rev_num[0] += 1  # Прибавление единицы к разряду единиц
+        
+        """ 
+        Запись числа справа налево;
+        прибавление единицы к разряду единиц  
+        """
+        rev_num = self.A.copy()[::-1]
+        rev_num[0] += 1
 
         """ Перенос единиицы при переполнении разряда """
         for i in range(self.len + 1):
             if rev_num[i] == 10:
                 rev_num[i] = 0
                 if i < self.len:
-                    rev_num[i + 1] += 1
-                else:
+                    rev_num[i+1] += 1
+                else: 
                     rev_num.append(1)
-
-        return Natural(len(rev_num) - 1, rev_num.reverse())
+        
+        return Natural(len(rev_num) - 1, rev_num[::-1])
 
     def __add__(self, other):
         """
@@ -128,15 +132,16 @@ class Natural:
         return Natural(len(res) - 1, res)
 
     def MUL_ND_N(self, int):
-        """
-        Выполнил: Сурин Максим
+        """ 
+        Выполнил: Сурин Максим 
         Умножение натурального числа на цифру
         """
-
-        rev_num = self.A.reverse()  # Запись числа справа налево
-
+        
+        """ Запись числа справа налево """
+        rev_num = self.A.copy()[::-1]
+        
         """ Домножение каждого разряда на цифру """
-        for i in range(self.len + 1):
+        for i in range(self.len + 1): 
             rev_num[i] *= int
 
         """ Перенос при переполнении разряда """
@@ -146,13 +151,13 @@ class Natural:
                 В текущем разряде сохраняем единицы,
                 в следующий переносим десятки
                 """
-                rev_num[i] %= 10
                 if i < self.len:
-                    rev_num[i + 1] = rev_num[i] // 10
-                else:
+                    rev_num[i+1] += rev_num[i] // 10
+                else: 
                     rev_num.append(rev_num[i] // 10)
-
-        return Natural(len(rev_num) - 1, rev_num.reverse())
+                rev_num[i] %= 10
+        
+        return Natural(len(rev_num)-1, rev_num[::-1])
 
     def MUL_Nk_N(self, other):
         """
@@ -216,16 +221,18 @@ class Natural:
         return result
 
     def SUB_NDN_N(self, int, other):
-        """
-        Выполнил: Сурин Максим
+        """ 
+        Выполнил: Сурин Максим 
         Вычитание из натурального другого натурального, умноженного на цифру для случая с неотрицательным результатом
         """
 
-        other_num = other.MUL_ND_N(int)  # Домножение второго числа на цифру
+        """ Домножение второго числа на цифру """
+        other_num = other.MUL_ND_N(int)
 
-        if self.COM_NN_D(other_num) == -1:  # При отрицательном результате возвращаем ноль
+        """ В случае отрицательного результата возвращаем ноль """
+        if self.COM_NN_D(other_num) == -1:
             return Natural(0, [0])
-
+        
         return self - other_num
 
     def DIV_NN_Dk(self, other) -> (int, int):
@@ -360,4 +367,3 @@ class Natural:
         """
         gcd = self.GCF_NN_N(other)
         return self * other // gcd
-
