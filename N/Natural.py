@@ -1,16 +1,18 @@
 class Natural:
     def __init__(self, n, A):
-        self.A = A #[] массив из int   123 -> [1, 2, 3]
-        self.len = n #int len(A)-1
+        self.A = A  # [] массив из int   123 -> [1, 2, 3]
+        self.len = n  # int len(A)-1
+        # Автоматически убираем ведущие нули при создании
+        while len(self.A) > 1 and self.A[0] == 0:
+            self.A.pop(0)
+        # Корректируем длину после удаления нулей
+        self.len = len(self.A) - 1
 
-    def TRANS_N_Z(self):
-        """
-        Сделала: Имховик Наталья
-        Преобразование натурального в целое
-        Возвращает целое
-        """
-        # Формируем положительное целое с полями натурального
-        return Integer(0, self.len, self.A[:])
+        # Если после удаления нулей массив пуст, создаем [0]
+
+        if len(self.A) == 0:
+            self.A = [0]
+            self.len = 0
 
     def COM_NN_D(self, other):
         """
@@ -52,14 +54,19 @@ class Natural:
         Проверка на ноль натурального числа
         """
         # Число равно нулю, если оно состоит из одной цифры и эта цифра 0
-        return not(self.len == 0 and self.A[0] == 0)
+
+        A = self.A[:]
+        while len(A) > 1 and A[0] == 0:
+            A.pop(0)
+
+        return not (self.len == 0 and self.A[0] == 0)
 
     def ADD_1N_N(self):
-        """ 
-        Выполнил: Сурин Максим 
+        """
+        Выполнил: Сурин Максим
         Добавление 1 к натуральному числу
         """
-        
+
         """ 
         Запись числа справа налево;
         прибавление единицы к разряду единиц  
@@ -72,10 +79,10 @@ class Natural:
             if rev_num[i] == 10:
                 rev_num[i] = 0
                 if i < self.len:
-                    rev_num[i+1] += 1
-                else: 
+                    rev_num[i + 1] += 1
+                else:
                     rev_num.append(1)
-        
+
         return Natural(len(rev_num) - 1, rev_num[::-1])
 
     def __add__(self, other):
@@ -132,16 +139,16 @@ class Natural:
         return Natural(len(res) - 1, res)
 
     def MUL_ND_N(self, int):
-        """ 
-        Выполнил: Сурин Максим 
+        """
+        Выполнил: Сурин Максим
         Умножение натурального числа на цифру
         """
-        
+
         """ Запись числа справа налево """
         rev_num = self.A.copy()[::-1]
-        
+
         """ Домножение каждого разряда на цифру """
-        for i in range(self.len + 1): 
+        for i in range(self.len + 1):
             rev_num[i] *= int
 
         """ Перенос при переполнении разряда """
@@ -152,35 +159,44 @@ class Natural:
                 в следующий переносим десятки
                 """
                 if i < self.len:
-                    rev_num[i+1] += rev_num[i] // 10
-                else: 
+                    rev_num[i + 1] += rev_num[i] // 10
+                else:
                     rev_num.append(rev_num[i] // 10)
                 rev_num[i] %= 10
-        
-        return Natural(len(rev_num)-1, rev_num[::-1])
 
-    def MUL_Nk_N(self, other):
+        return Natural(len(rev_num) - 1, rev_num[::-1])
+
+    def MUL_Nk_N(self, k):
         """
         Богданов Никита Константинович
         Умножение натурального числа на 10^k
         """
 
-        # Если число 0 или k = 0, возвращаем исходное число
-        if not(self.NZER_N_B()) or not(other.NZER_N_B()):
-            return Natural(self.len, self.A[:])
+        if not isinstance(k, Natural):
+            # Если k - int, преобразуем в Natural
+            if k == 0:
+                k_natural = Natural(0, [0])
+            elif k < 10:
+                k_natural = Natural(0, [k])
+            else:
+                k_digits = [int(d) for d in str(k)]
+                k_natural = Natural(len(k_digits) - 1, k_digits)
+        else:
+            k_natural = k
 
-        # Получаем значение k как целое число (количество нулей)
+        # Если число равно нулю, возвращаем ноль
+        if not self.NZER_N_B():
+            return Natural(0, [0])
+
+        # Получаем значение k как целое число
         k_value = 0
         multiplier = 1
-        for i in range(other.len, -1, -1):
-            k_value += other.A[i] * multiplier
+        for i in range(k_natural.len, -1, -1):
+            k_value += k_natural.A[i] * multiplier
             multiplier *= 10
 
-        # Копируем существующие цифры со сдвигом на k позиций
         new_A = self.A + [0] * k_value
-
-        new_len = len(new_A) - 1
-        return Natural(new_len, new_A)
+        return Natural(len(new_A) - 1, new_A)
 
     def __mul__(self, other):
         """
@@ -191,38 +207,35 @@ class Natural:
             raise TypeError("The multipliers must be Natural")
 
         # Если одно из чисел равно нулю, возвращаем ноль
-        if self.NZER_N_B() or other.NZER_N_B():
+        if not self.NZER_N_B() or not other.NZER_N_B():
             return Natural(0, [0])
 
-        # Инициализируем результат как 0
+        # Используем упрощенный алгоритм умножения
         result = Natural(0, [0])
 
-        # Умножаем каждую цифру N2 на N1 и складываем со сдвигом
-        for i in range(other.len, -1, -1):
-            digit = other.A[i]
+        # Проходим по всем цифрам второго числа справа налево
+        for i in range(len(other.A)):
+            # Индекс цифры (от младшей к старшей)
+            digit_index = len(other.A) - 1 - i
+            digit = other.A[digit_index]
 
+            # Умножаем self на цифру
             temp_product = self.MUL_ND_N(digit)
 
-            # Создаем сдвиг (умножение на 10^i), если i не самая младшая цифра
-            if i < other.len:
-                # Аналогия как умножение столбиком
-                shift_value = other.len - i  # На сколько разрядов сдвигать
-                shift_digits = [shift_value] if shift_value < 10 else [int(d) for d in str(shift_value)]
-                shift_natural = Natural(len(shift_digits) - 1, shift_digits)
-
-                # Сдвигаем
-                shifted_product = temp_product.MUL_Nk_N(shift_natural)
-            else:
-                shifted_product = temp_product
+            # Сдвигаем на i позиций влево (умножаем на 10^i)
+            if i > 0:
+                # Создаем Natural для сдвига
+                shift_natural = Natural(0, [i]) if i < 10 else Natural(1, [i // 10, i % 10])
+                temp_product = temp_product.MUL_Nk_N(shift_natural)
 
             # Складываем с результатом
-            result = result + shifted_product
+            result = result + temp_product
 
         return result
 
     def SUB_NDN_N(self, int, other):
-        """ 
-        Выполнил: Сурин Максим 
+        """
+        Выполнил: Сурин Максим
         Вычитание из натурального другого натурального, умноженного на цифру для случая с неотрицательным результатом
         """
 
@@ -232,7 +245,7 @@ class Natural:
         """ В случае отрицательного результата возвращаем ноль """
         if self.COM_NN_D(other_num) == -1:
             return Natural(0, [0])
-        
+
         return self - other_num
 
     def DIV_NN_Dk(self, other) -> (int, int):
@@ -243,35 +256,40 @@ class Natural:
         где k - номер позиции этой цифры (номер считается с нуля)
         """
 
-        # Проверяем, что self >= other
         if self.COM_NN_D(other) == -1:
             return 0, 0
 
-        # Определяем позицию k
         k = self.len - other.len
-
-        # Если после сдвига other становится больше self, уменьшаем k
-        if k > 0:
-            other_shifted = other.MUL_Nk_N(k)
-            if self.COM_NN_D(other_shifted) == -1:
-                k -= 1
-
-        # Если k стал отрицательным, возвращаем 0
         if k < 0:
             return 0, 0
 
-        # Ищем цифру от 9 до 1
+        # ИСПРАВЛЕНО: создаем Natural для k
+        if k < 10:
+            k_natural = Natural(0, [k])
+        else:
+            k_digits = [int(d) for d in str(k)]
+            k_natural = Natural(len(k_digits) - 1, k_digits)
+
+        other_shifted = other.MUL_Nk_N(k_natural)
+
+        # Проверяем, что other_shifted не больше self
+        if self.COM_NN_D(other_shifted) == -1:
+            k -= 1
+            if k < 0:
+                return 0, 0
+            if k < 10:
+                k_natural = Natural(0, [k])
+            else:
+                k_digits = [int(d) for d in str(k)]
+                k_natural = Natural(len(k_digits) - 1, k_digits)
+            other_shifted = other.MUL_Nk_N(k_natural)
+
         for digit in range(9, 0, -1):
-            other_shifted = other.MUL_Nk_N(k)
-
-            # Преобразуем в числа для проверки
-            other_shifted_num = int("".join(map(str, other_shifted.A)))
-            self_num = int("".join(map(str, self.A)))
-
-            if digit * other_shifted_num <= self_num:
+            temp = other_shifted.MUL_ND_N(digit)
+            if self.COM_NN_D(temp) != -1:
                 return digit, k
 
-        return 1, k
+        return 0, 0
 
     def __floordiv__(self, other):
         """
@@ -280,48 +298,22 @@ class Natural:
         на второе с остатком (делитель отличен от нуля)
         """
 
-        # Проверка деления на ноль
-        if all(x == 0 for x in other.A):
+        if not other.NZER_N_B():
             raise ZeroDivisionError("Division by zero")
 
-        # Если делимое меньше делителя, возвращаем 0
         if self.COM_NN_D(other) == -1:
-            return Natural(1, [0])
+            return Natural(0, [0])
 
-        # Определяем максимальную длину результата
-        max_length = self.len - other.len + 1
-        result_digits = [0] * max_length  # массив для цифр результата
+        # Простая реализация через вычитание
+        quotient = Natural(0, [0])
+        current = Natural(self.len, self.A.copy())
+        one = Natural(0, [1])
 
-        current = Natural(self.len, self.A.copy())  # текущий остаток
-
-        # Пока текущий остаток >= other
         while current.COM_NN_D(other) != -1:
-            # Получаем очередную цифру и её позицию
-            digit, k = current.DIV_NN_Dk(other)
+            current = current - other
+            quotient = quotient + one
 
-            # Если цифра 0, значит деление завершено
-            if digit == 0:
-                break
-
-            # Записываем цифру в результат на соответствующую позицию
-            result_digits[k] = digit
-
-            # Вычитаем: current = current - digit * other * 10^k
-            other_shifted = other.MUL_Nk_N(k)  # other * 10^k
-            current = current.SUB_NDN_N(other_shifted, digit)
-
-            # Если остаток стал нулевым, завершаем
-            if all(x == 0 for x in current.A):
-                break
-
-        # Убираем ведущие нули
-        while len(result_digits) > 1 and result_digits[-1] == 0:
-            result_digits.pop()
-
-        # Разворачиваем массив (т.к. у нас старшие разряды в конце)
-        result_digits.reverse()
-
-        return Natural(len(result_digits), result_digits)
+        return quotient
 
     # вместо MOD_NN_N (переопределяем Остаток от деления %)
     def __mod__(self, other):

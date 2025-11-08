@@ -1,4 +1,6 @@
 from N.Natural import Natural
+from TRANS.TRANS_N_Z import TRANS_N_Z
+from TRANS.TRANS_Z_N import TRANS_Z_N
 
 class Integer:
     def __init__(self, s, n, A):
@@ -46,31 +48,6 @@ class Integer:
         # Иначе, число не ноль
         new_s = 0 if self.s == 1 else 1  # меняем знак числа
         return Integer(new_s, self.len, self.A)  # формируем новое целое число с противоположным знаком
-
-    def TRANS_N_Z(self):
-        """
-        Сделала: Имховик Наталья
-        Преобразование натурального в целое
-        Возвращает целое
-        """
-        # Формируем положительное целое с полями натурального
-        return Integer(0, self.len, self.A[:])
-
-    def TRANS_Z_N(self):
-        """
-        Сделал: Чумаков Никита Ярославович
-        Преобразует целое неотрицательное число в натуральное.
-        Если число отрицательное — ошибка.
-        """
-        # Проверим знак
-        if self.s == 1:
-            raise ValueError("Нельзя преобразовать отрицательное целое число в натуральное")
-
-        # Берём поля от класса Integer и из них формируем натуральное число (класс Natural)
-        A = self.A[:]
-        n = self.len
-
-        return Natural(n, A)
 
     def __sub__(self, other):
         """
