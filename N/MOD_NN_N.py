@@ -6,7 +6,7 @@ def __mod__(self, other):
     на второе натуральное (делитель отличен от нуля)
     """
 
-    q = self // other                       # Целая часть от деления self на other, Natural
-    digit = int("".join(map(str, q.A)))     # Перевели Natural q в int digit, чтобы воспользоваться SUB_NDN_N
+    q = self // other  # Целая часть от деления self на other, Natural
+    digit = int("".join(map(str, q.A)))  # Перевели Natural q в int digit, чтобы воспользоваться SUB_NDN_N
 
-    return self.SUB_NDN_N(other, digit)     # self - other * digit
+    return self.SUB_NDN_N(digit, other)  # self - other * digit
