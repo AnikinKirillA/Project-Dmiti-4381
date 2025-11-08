@@ -23,4 +23,4 @@ def MUL_ND_N(self, int):
                 rev_num.append(rev_num[i] // 10)
             rev_num[i] %= 10
     
-    return rev_num[::-1]
+    return Natural(len(rev_num)-1, rev_num[::-1])

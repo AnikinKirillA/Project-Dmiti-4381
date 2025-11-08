@@ -4,7 +4,7 @@ def ADD_1N_N(self):
     Добавление 1 к натуральному числу
     """
     
-    rev_num = self.A.reverse() # Запись числа справа налево
+    rev_num = self.A.copy()[::-1]# Запись числа справа налево
     rev_num[0] += 1 # Прибавление единицы к разряду единиц
 
     """ Перенос единиицы при переполнении разряда """
@@ -16,4 +16,4 @@ def ADD_1N_N(self):
             else: 
                 rev_num.append(1)
     
-    return Natural(len(rev_num) - 1, rev_num.reverse())
+    return Natural(len(rev_num) - 1, rev_num[::-1])
