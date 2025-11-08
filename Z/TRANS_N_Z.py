@@ -1,8 +1,8 @@
-def TRANS_N_Z(N: Natural):
+def TRANS_N_Z(self):
     """
     Сделала: Имховик Наталья
     Преобразование натурального в целое
     Возвращает целое
     """
     # Формируем положительное целое с полями натурального
-    return Integer(0, N.len, N.A[:])
+    return Integer(0, self.len, self.A[:])
