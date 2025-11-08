@@ -291,6 +291,7 @@ class Natural:
 
         return 0, 0
 
+    # вместо DIV_NN_N (переопределяем Целочисленное деление //)
     def __floordiv__(self, other):
         """
         Сделал: Захаренко Александр
@@ -298,35 +299,75 @@ class Natural:
         на второе с остатком (делитель отличен от нуля)
         """
 
-        if not other.NZER_N_B():
+        # Проверка деления на ноль
+        if all(x == 0 for x in other.A):
             raise ZeroDivisionError("Division by zero")
 
+        # Если делимое меньше делителя, возвращаем 0
         if self.COM_NN_D(other) == -1:
-            return Natural(0, [0])
+            return Natural(1, [0])
 
-        # Простая реализация через вычитание
-        quotient = Natural(0, [0])
-        current = Natural(self.len, self.A.copy())
-        one = Natural(0, [1])
+        # Определяем максимальную длину результата
+        max_length = self.len - other.len + 1
+        result_digits = [0] * max_length  # массив для цифр результата
 
+        current = Natural(self.len, self.A.copy())  # текущий остаток
+
+        # Пока текущий остаток >= other
         while current.COM_NN_D(other) != -1:
-            current = current - other
-            quotient = quotient + one
+            # Получаем очередную цифру и её позицию
+            digit, k = current.DIV_NN_Dk(other)
 
-        return quotient
+            # Если цифра 0, значит деление завершено
+            if digit == 0:
+                break
 
-    # вместо MOD_NN_N (переопределяем Остаток от деления %)
+            # Записываем цифру в результат на соответствующую позицию
+            result_digits[k] = digit
+
+            # Вычитаем: current = current - digit * other * 10^k
+            other_shifted = other.MUL_Nk_N(k)  # other * 10^k
+            current = current.SUB_NDN_N(digit, other_shifted)
+
+            # Если остаток стал нулевым, завершаем
+            if all(x == 0 for x in current.A):
+                break
+
+        # Убираем ведущие нули
+        while len(result_digits) > 1 and result_digits[-1] == 0:
+            result_digits.pop()
+
+        # Разворачиваем массив (т.к. у нас старшие разряды в конце)
+        result_digits.reverse()
+
+        return Natural(len(result_digits), result_digits)
+
+        # вместо MOD_NN_N (переопределяем Остаток от деления %)
+
     def __mod__(self, other):
         """
         Сделал: Захаренко Александр
         Остаток от деления первого натурального числа
         на второе натуральное (делитель отличен от нуля)
         """
+        # Проверка деления на ноль
+        if not other.NZER_N_B():
+            raise ZeroDivisionError("Division by zero")
 
-        q = self // other  # Целая часть от деления self на other, Natural
-        digit = int("".join(map(str, q.A)))  # Перевели Natural q в int digit, чтобы воспользоваться SUB_NDN_N
+        # Если делимое меньше делителя, возвращаем само делимое
+        if self.COM_NN_D(other) == -1:
+            return Natural(self.len, self.A.copy())
 
-        return self.SUB_NDN_N(digit, other)  # self - other * digit
+        # Вычисляем частное
+        quotient = self // other
+
+        # Вычисляем произведение other * quotient
+        product = other * quotient
+
+        # Вычисляем остаток
+        remainder = self - product
+
+        return remainder
 
     def GCF_NN_N(self, other):
         """

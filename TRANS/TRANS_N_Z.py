@@ -1,4 +1,4 @@
-from Z.Integer import Integer
+#from Z.Integer import Integer
 def TRANS_N_Z(N):
     """
     Сделала: Имховик Наталья

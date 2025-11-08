@@ -1,4 +1,4 @@
-from N.Natural import Natural
+#from N.Natural import Natural
 def TRANS_Z_N(Z):
     """
     Сделал: Чумаков Никита Ярославович
