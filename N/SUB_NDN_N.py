@@ -12,4 +12,3 @@ def SUB_NDN_N(self, int, other):
         return Natural(0, [0])
     
     return self - other_num
-Project-Dmit/N/SUB_NDN_N.py Project-Dmit/N/MUL_ND_N.py Project-Dmit/N/ADD_1N_N.py
