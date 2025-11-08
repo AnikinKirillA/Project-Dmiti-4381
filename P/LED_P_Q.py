@@ -8,4 +8,4 @@ def LED_P_Q(self):
     if not self.C or self.m < 0:
         return Rational(Integer(0, 0, [0]), Natural(0, [1]))
     
-    return self.C[0] # Старший коэффициент - первый в массиве (если коэффициенты от старших к младшим)
+    return self.C[0] # Старший коэффициент - первый в массиве
