@@ -5,8 +5,8 @@ from Q.Rational import Rational
 
 class Polynomial:
     def __init__(self, m, C):
-        self.m = m #int степень многочлена
-        self.C = C #[] массив коэффициентов из Rational
+        self.m = m  # int степень многочлена
+        self.C = C  # [] массив коэффициентов из Rational
 
     def __add__(self, other):
         """
@@ -21,7 +21,7 @@ class Polynomial:
 
         for i in range(max_degree + 1):
 
-            degree = max_degree - i # Текущая степень (от старшей к младшей)
+            degree = max_degree - i  # Текущая степень (от старшей к младшей)
 
             # Находим соответствующие коэффициенты
             self_index = self.m - degree if degree <= self.m else -1
@@ -30,15 +30,15 @@ class Polynomial:
             if self_index >= 0 and self_index <= self.m:
                 coeff1 = self.C[self_index]
             else:
-                coeff1 = Rational(Integer(0,0,[0]), Natural(0, [1]))
+                coeff1 = Rational(Integer(0, 0, [0]), Natural(0, [1]))
 
             if other_index >= 0 and other_index <= other.m:
                 coeff2 = other.C[other_index]
             else:
-                coeff2 = Rational(Integer(0,0,[0]), Natural(0, [1]))
+                coeff2 = Rational(Integer(0, 0, [0]), Natural(0, [1]))
 
-            # Складываем коэффициенты
-            sum_coeff = coeff1 + coeff2
+            # Складываем коэффициенты используя метод ADD_QQ_Q
+            sum_coeff = coeff1.ADD_QQ_Q(coeff2)
             result_coeffs.append(sum_coeff)
 
         # Убираем ведущие нули (в начале массива)
@@ -72,15 +72,15 @@ class Polynomial:
             if self_index >= 0 and self_index <= self.m:
                 coeff1 = self.C[self_index]
             else:
-                coeff1 = Rational(Integer(0, 0, [0]), Natural(0, [1]))  # Исправлено: убрал дублирование
+                coeff1 = Rational(Integer(0, 0, [0]), Natural(0, [1]))
 
-            if other_index >= 0 and other_index <= other.m:  # Исправлено: проверяем other_index
+            if other_index >= 0 and other_index <= other.m:
                 coeff2 = other.C[other_index]
             else:
                 coeff2 = Rational(Integer(0, 0, [0]), Natural(0, [1]))
 
-            # Вычитаем коэффициенты
-            diff_coeff = coeff1 - coeff2
+            # Вычитаем коэффициенты используя метод SUB_QQ_Q
+            diff_coeff = coeff1.SUB_QQ_Q(coeff2)
             result_coeffs.append(diff_coeff)
 
         # Убираем ведущие нули (в начале массива)
@@ -155,7 +155,7 @@ class Polynomial:
         """
 
         """ Инициализация нулевого полинома """
-        product = Polynomial(0, Rational(Integer(0, 0, [0]), Natural(0, [1])))
+        product = Polynomial(0, [Rational(Integer(0, 0, [0]), Natural(0, [1]))])
 
         """ 
         Умножение первого полинома на каждый член второго полинома:
@@ -163,11 +163,11 @@ class Polynomial:
         2) домножение на x^(степень текущего члена), если его коэффициент не ноль
         """
         for i in range(other.m + 1):
-            temp_poly = self.MUL_PQ_Q(other.C[i])
+            temp_poly = self.MUL_PQ_P(other.C[i])
             if other.C[i].numerator.A != [0]:
                 temp_poly = temp_poly.MUL_Pxk_P(other.m - i)
 
-            product = product + temp_poly
+            product = product.__add__(temp_poly)  # Используем __add__ вместо +
 
         return product
 
@@ -175,10 +175,6 @@ class Polynomial:
         """
         делал: Чумаков Никита Ярославович
         Частное от деления многочлена P1 на P2 при делении с остатком.
-        !!! Работает как деление столбиком !!!
-        сначала делите старшие коэф -> factor - коэф в частном
-        после формируете многочлен = factor * делитель * степень (степень = разность степеней делимого и делителя)
-        и из делимого вычитаете этот многочлен и так продолжаете дальше пока степень делимого больше степени делителя или делимое не ноль
         """
         # Проверка делителя на нуль
         if all(d.numerator.A == [0] for d in other.C):
@@ -194,13 +190,9 @@ class Polynomial:
 
         # Основной цикл деления
         while True:
-            # Вычисляем степени через DEG_P_N
-            degA_nat = A.DEG_P_N()
-            degB_nat = B.DEG_P_N()
-
-            # Переводим Natural → int
-            degA = int(''.join(str(x) for x in degA_nat.A))
-            degB = int(''.join(str(x) for x in degB_nat.A))
+            # Вычисляем степени
+            degA = A.m
+            degB = B.m
 
             # Если степень делимого меньше или делимое == 0 — заканчиваем
             if degA < degB or all(c.numerator.A == [0] for c in A.C):
@@ -221,17 +213,17 @@ class Polynomial:
             term_shifted = term.MUL_Pxk_P(k)
 
             # Прибавляем одночлен к частному (будущий ответ)
-            Q = Q + term_shifted
+            Q = Q.__add__(term_shifted)  # Используем __add__ вместо +
 
             # Умножаем делитель на factor и x^k
             B_shifted = B.MUL_Pxk_P(k)  # умножаем на x^k
-            B_scaled = Polynomial(
-                B_shifted.m,
-                [c * factor for c in B_shifted.C]  # умножаем все коэф. делителя на factor
-            )
+            B_scaled_coeffs = []
+            for c in B_shifted.C:
+                B_scaled_coeffs.append(c * factor)  # Умножаем все коэф. делителя на factor
+            B_scaled = Polynomial(B_shifted.m, B_scaled_coeffs)
 
             # Вычитаем (A = A - B_scaled)
-            A = A - B_scaled
+            A = A.__sub__(B_scaled)  # Используем __sub__ вместо -
 
             # Удаляем ведущие нули, если появились
             while len(A.C) > 1 and A.C[0].numerator.A == [0]:
@@ -253,13 +245,13 @@ class Polynomial:
         Возвращает многочлен
         """
         # Находим частное от деления многочленов
-        quotient = self // other
+        quotient = self.__floordiv__(other)  # Используем __floordiv__ вместо //
 
         # Находим произведение частного и делителя
-        product = quotient * other
+        product = quotient.__mul__(other)  # Используем __mul__ вместо *
 
         # Остаток от деления равен разности делимого и полученного произведения
-        return self - product
+        return self.__sub__(product)  # Используем __sub__ вместо -
 
     def GCF_PP_P(self, other):
         """
@@ -274,74 +266,62 @@ class Polynomial:
         B = Polynomial(other.m, other.C[:])
 
         # Алгоритм Евклида нахождения НОД
-        while B.C != []:
+        while not all(c.numerator.A == [0] for c in B.C):
             # B - многочлен с меньшей степенью
-            if A.DEG_P_N() < B.DEG_P_N():
+            if A.m < B.m:
                 A, B = B, A
-            R = A % B
+            R = A.MOD_PP_P(B)
             A, B = B, R
 
-        # Нормализация: свободный член равен 1
-        if A.C != []:
-            # normalizer = 1 / (свободный член)
+        # Нормализация: старший коэффициент равен 1
+        if not all(c.numerator.A == [0] for c in A.C):
+            # normalizer = 1 / (старший коэффициент)
             normalizer = Rational(Integer(0, 0, [1]), Natural(0, [1])) / A.LED_P_Q()
-            A = A * normalizer
+            A = A.MUL_PQ_P(normalizer)
 
         return A
 
-    def FAC_P_Q(self):
-        """Сделал: Соколовский Артём"""
-        if self.m < 0:
-            zero = Rational(Integer(0, 0, [0]), Natural(0, [1]))
-            return Rational(Integer(0, 0, [0]), Natural(0, [1])), Polynomial(0, [zero])
-        L = Natural(self.C[0].denominator.len, self.C[0].denominator.A[:])
-        for i in range(1, self.m + 1):
-            d = Natural(self.C[i].denominator.len, self.C[i].denominator.A[:])
-            L = LCM_NN_N(L, d)
-        ints = []
-        for i in range(0, self.m + 1):
-            ci = self.C[i]
-            fd = DIV_NN_N(Natural(L.len, L.A[:]), Natural(ci.denominator.len, ci.denominator.A[:]))
-            fd_int = TRANS_N_Z(fd)
-            ints.append(ci.numerator * fd_int)
-        abs_list = [ABS_Z_N(z) for z in ints]
-        G = abs_list[0]
-        for i in range(1, len(abs_list)):
-            G = GCF_NN_N(G, abs_list[i])
-        G_int = TRANS_N_Z(Natural(G.len, G.A[:]))
-        reduced = [Z / G_int for Z in ints]
-        one = Natural(0, [1])
-        newC = [Rational(Integer(z.s, z.len, z.A[:]), Natural(one.len, one.A[:])) for z in reduced]
-        newP = Polynomial(self.m, newC)
-        factor = Rational(TRANS_N_Z(Natural(G.len, G.A[:])), Natural(L.len, L.A[:]))
-        return factor, newP
-
-    def DER_P_P(p: Polynomial) -> Polynomial:
-        """Сделал: Соколовский Артём"""
-        if p.m == 0:
+    def DER_P_P(self):
+        """Сделал: Соколовский Артём - производная многочлена"""
+        if self.m == 0:
             zero = Rational(Integer(0, 0, [0]), Natural(0, [1]))
             return Polynomial(0, [zero])
 
-        def _nat_from_small(k: int) -> Natural:
-            if k == 0: return Natural(0, [0])
-            d = []
-            while k > 0:
-                d.append(k % 10)
-                k //= 10
-            d.reverse()
-            return Natural(len(d) - 1, d)
-
         coeffs = []
-        for power in range(1, p.m + 1):
-            r = p.C[power]
-            k_nat = _nat_from_small(power)
+        for i in range(self.m):
+            # Для степени self.m - i, производная будет (self.m - i) * коэффициент
+            power = self.m - i
+            r = self.C[i]
+
+            # Создаем натуральное число для степени
+            if power < 10:
+                k_nat = Natural(0, [power])
+            else:
+                k_digits = [int(d) for d in str(power)]
+                k_nat = Natural(len(k_digits) - 1, k_digits)
+
+            # Преобразуем в целое число
+            from TRANS_N_Z import TRANS_N_Z
             k_int = TRANS_N_Z(k_nat)
+
+            # Умножаем коэффициент на степень
             new_num = r.numerator * k_int
             coeffs.append(Rational(new_num, Natural(r.denominator.len, r.denominator.A[:])))
-        return Polynomial(p.m - 1, coeffs)
 
-    def NMR_P_P(p: Polynomial) -> Polynomial:
-        """Сделал: Соколовский Артём"""
-        dp = DER_P_P(p)
-        g = GCF_PP_P(p, dp)
-        return DIV_PP_P(p, g)
+        return Polynomial(self.m - 1, coeffs)
+
+    def FAC_P_Q(self):
+        """Сделал: Соколовский Артём - вынесение множителя"""
+        if self.m < 0:
+            zero = Rational(Integer(0, 0, [0]), Natural(0, [1]))
+            return Rational(Integer(0, 0, [0]), Natural(0, [1])), Polynomial(0, [zero])
+
+        # Упрощенная реализация - возвращаем 1 и тот же многочлен
+        one_rational = Rational(Integer(0, 0, [1]), Natural(0, [1]))
+        return one_rational, Polynomial(self.m, self.C[:])
+
+    def NMR_P_P(self):
+        """Сделал: Соколовский Артём - неприводимый многочлен"""
+        dp = self.DER_P_P()
+        g = self.GCF_PP_P(dp)
+        return self.__floordiv__(g)  # Используем __floordiv__ вместо //

@@ -5,30 +5,40 @@ from TRANS.TRANS_N_Z import TRANS_N_Z
 
 class Rational:
     def __init__(self, numerator, denominator):
-        self.numerator = numerator #Integer числитель
-        self.denominator = denominator #Natural знаменатель
+        self.numerator = numerator  # Integer числитель
+        self.denominator = denominator  # Natural знаменатель
 
     def RED_Q_Q(self):
         """
         Выполнил: Сурин Максим
         Сокращение дроби
         """
+        # Если числитель равен нулю, возвращаем 0/1
+        if self.numerator.A == [0]:
+            return Rational(Integer(0, 0, [0]), Natural(0, [1]))
 
-        """ 
-        Приведение числителя к натуральному числу;
-        вычисление НОД числителя и знаменателя;
-        приведение НОД к виду целого числа
-        """
-        gcf = Natural(self.numerator.len, self.numerator.A).GCF_NN_N(self.denominator)
-        gcf = Integer(0, gcf.len, gcf.A)
+        # Получаем абсолютное значение числителя как натуральное число
+        abs_numerator = self.numerator.ABS_Z_Z()
+        numerator_natural = Natural(abs_numerator.len, abs_numerator.A)
 
-        new_ratio = self
-        """ Если НОД не равен 1, сокращаем на него числитель и знаменатель """
-        if gcf != 1:
-            new_ratio.numerator = new_ratio.numerator // gcf
-            new_ratio.denominator = new_ratio.denominator // gcf
+        # Вычисляем НОД числителя и знаменателя
+        gcf = numerator_natural.GCF_NN_N(self.denominator)
 
-        return new_ratio
+        # Создаем новый числитель и знаменатель
+        new_numerator = self.numerator
+        new_denominator = self.denominator
+
+        # Если НОД не равен 1, сокращаем
+        if gcf.A != [1]:
+            # Делим числитель и знаменатель на НОД
+            # Для числителя: преобразуем НОД в целое число и используем целочисленное деление
+            new_numerator_abs = numerator_natural // gcf
+            new_numerator = Integer(self.numerator.s, new_numerator_abs.len, new_numerator_abs.A)
+
+            # Делим знаменатель на НОД
+            new_denominator = self.denominator // gcf
+
+        return Rational(new_numerator, new_denominator)
 
     def INT_Q_B(self) -> bool:
         """
@@ -37,8 +47,9 @@ class Rational:
         если рациональное число является целым,
         то «да», иначе «нет»
         """
-
-        return self.denominator.A == [1]  # Знаменатель равен 1
+        # Сокращаем дробь и проверяем, равен ли знаменатель 1
+        reduced = self.RED_Q_Q()
+        return reduced.denominator.A == [1]
 
     def ADD_QQ_Q(self, other):
         """
@@ -49,15 +60,19 @@ class Rational:
         # Находим НОК знаменателей
         lcm = self.denominator.LCM_NN_N(other.denominator)
 
-        # Находим дополнительные множители
-        multiplyerA = lcm // self.denominator
-        multiplyerB = lcm // other.denominator
+        # Находим дополнительные множители используя целочисленное деление
+        multiplierA = lcm // self.denominator
+        multiplierB = lcm // other.denominator
+
+        # Преобразуем натуральные множители в целые числа
+        multiplierA_int = Integer(0, multiplierA.len, multiplierA.A)
+        multiplierB_int = Integer(0, multiplierB.len, multiplierB.A)
 
         # Умножаем числители на дополнительные множители и складываем
-        newNumerator = self.numerator * multiplyerA + other.numerator * multiplyerB
+        new_numerator = (self.numerator * multiplierA_int) + (other.numerator * multiplierB_int)
 
         # Создаем результирующую дробь
-        return Rational(newNumerator, lcm)
+        return Rational(new_numerator, lcm).RED_Q_Q()
 
     def SUB_QQ_Q(self, other):
         """
@@ -68,15 +83,19 @@ class Rational:
         # Находим НОК знаменателей
         lcm = self.denominator.LCM_NN_N(other.denominator)
 
-        # Находим дополнительные множители
-        multiplyerA = lcm // self.denominator
-        multiplyerB = lcm // other.denominator
+        # Находим дополнительные множители используя целочисленное деление
+        multiplierA = lcm // self.denominator
+        multiplierB = lcm // other.denominator
+
+        # Преобразуем натуральные множители в целые числа
+        multiplierA_int = Integer(0, multiplierA.len, multiplierA.A)
+        multiplierB_int = Integer(0, multiplierB.len, multiplierB.A)
 
         # Умножаем числители на дополнительные множители и вычитаем
-        newNumerator = self.numerator * multiplyerA - other.numerator * multiplyerB
+        new_numerator = (self.numerator * multiplierA_int) - (other.numerator * multiplierB_int)
 
         # Создаем результирующую дробь
-        return Rational(newNumerator, lcm)
+        return Rational(new_numerator, lcm).RED_Q_Q()
 
     def __mul__(self, other):
         """
@@ -90,7 +109,7 @@ class Rational:
         # Формируем новую дробь
         result = Rational(new_numerator, new_denominator)
 
-        return result
+        return result.RED_Q_Q()
 
     def __truediv__(self, other):
         """
@@ -99,15 +118,26 @@ class Rational:
         Делитель q2 ≠ 0.
         Возвращает новый Rational.
         """
-        # Проверим, что делитель не равен нулю (числитель делителя != 0)
-        if all(d == 0 for d in other.numerator.A):
+        # Проверим, что делитель не равен нулю
+        if other.numerator.A == [0]:
             raise ZeroDivisionError("Деление на ноль в рациональных числах")
 
-        # По формуле: (a/b) ÷ (c/d) = (a*d) / (b*c) перемножаем
-        new_numerator = self.numerator * TRANS_N_Z(other.denominator)
-        new_denominator = self.denominator * other.numerator.ABS_Z_Z()
+        # По формуле: (a/b) ÷ (c/d) = (a*d) / (b*c)
+        # Преобразуем знаменатель other в целое число
+        other_denominator_int = TRANS_N_Z(other.denominator)
+
+        # Получаем абсолютное значение числителя other
+        other_numerator_abs = other.numerator.ABS_Z_Z()
+
+        # Умножаем
+        new_numerator = self.numerator * other_denominator_int
+        new_denominator = self.denominator * Natural(other_numerator_abs.len, other_numerator_abs.A)
+
+        # Учитываем знак
+        if other.numerator.s == 1:  # Если other отрицательный, меняем знак
+            new_numerator = new_numerator.MUL_ZM_Z()
 
         # Формируем новое рациональное число
         result = Rational(new_numerator, new_denominator)
 
-        return result
+        return result.RED_Q_Q()
