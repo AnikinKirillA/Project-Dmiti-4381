@@ -5,7 +5,7 @@ def ADD_QQ_Q(self, other):
     Возвращает дробь
     """
     # Находим НОК знаменателей
-    lcm = LCM_NN_N(self.denominator, other.denominator)
+    lcm = self.denominator.LCM_NN_N(other.denominator)
 
     # Находим дополнительные множители
     multiplyerA = lcm // self.denominator
