@@ -123,6 +123,8 @@ class Calculator:
 
     def process_expression(self, expr):
         """Обрабатывает выражение"""
+        print(expr)
+        print(to_rpn(expr))
         ans = eval_rpn(to_rpn(expr))
         if type(ans) != Polynomial:
             ans = TRANS_Q_P(ans)
@@ -134,3 +136,4 @@ class Calculator:
 
 
 s = Calculator().run()
+

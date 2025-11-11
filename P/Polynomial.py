@@ -4,6 +4,7 @@ from Q.Rational import Rational
 from TRANS.TRANS_N_Z import TRANS_N_Z
 
 
+
 class Polynomial:
     def __init__(self, m, C):
         self.m = m  # int степень многочлена
@@ -101,7 +102,10 @@ class Polynomial:
 
         new_C = []  # массив для новых коэффициентов
         for i in range(len(self.C)):  # Проходимся по коэффициентам (Rational)
-            tmp = self.C[i] * q  # Умножаем их на заданное число q
+            if self.C[i].numerator.A == 0:
+                tmp = self.C[i]
+            else:
+                tmp = self.C[i] * q # Умножаем их на заданное число q
             new_C.append(tmp.RED_Q_Q())  # Cокращаем дробь и добавляем в массив коэффициентов
 
         return Polynomial(self.m, new_C)  # Формируем новый полином
@@ -159,14 +163,19 @@ class Polynomial:
         product = Polynomial(0, [Rational(Integer(0, 0, [0]), Natural(0, [1]))])
 
         """ 
-        Умножение первого полинома на каждый член второго полинома:
+        Умножение длинного полинома на каждый член короткого полинома:
         1) умножение на коэффициент каждого члена 
         2) домножение на x^(степень текущего члена), если его коэффициент не ноль
         """
-        for i in range(other.m + 1):
-            temp_poly = self.MUL_PQ_P(other.C[i])
-            if other.C[i].numerator.A != [0]:
-                temp_poly = temp_poly.MUL_Pxk_P(other.m - i)
+        if self.m <= other.m:
+            shorter, longer = self, other
+        else:
+            shorter, longer = other, self
+
+        for i in range(shorter.m + 1):
+            temp_poly = longer.MUL_PQ_P(shorter.C[i])
+            if shorter.C[i].numerator.A != [0]:
+                temp_poly = temp_poly.MUL_Pxk_P(shorter.m - i)
 
             product = product + temp_poly
 
@@ -334,16 +343,10 @@ class Polynomial:
             return '0'
         for i in range(p.m + 1):
             temp = list(map(str, p.C[i].numerator.A))
-            if p.C[i].numerator.s == 1:
-                s = s + ' - '
             if int(temp[0]) != 0:
                 if i != 0 and p.C[i].numerator.s == 0:
                     s = s + ' + '
-                temp = "".join(temp)
-                s = s + temp
-                s = s + '/'
-                temp = list(map(str, p.C[i].denominator.A))
-                temp = "".join(temp)
+                temp = p.C[i].show()
                 s = s + temp
                 if i < p.m - 1:
                     s = s + 'x^' + str(p.m - i)

@@ -150,3 +150,25 @@ class Rational:
         result = Rational(new_numerator, new_denominator)
 
         return result.RED_Q_Q()
+
+    def show(self):
+        s=''
+        if self.numerator.A[0] == 0:
+            return '0'
+        if self.numerator.s == 1:
+            s='-'
+        if self.denominator.len == 0 and self.denominator.A[0] == 1:
+            temp = list(map(str, self.numerator.A))
+            temp = "".join(temp)
+            s = s+temp
+            return s
+        temp = list(map(str, self.numerator.A))
+        s = s + '('
+        temp = "".join(temp)
+        s = s + temp
+        temp = list(map(str, self.denominator.A))
+        s = s+'/'
+        temp = "".join(temp)
+        s = s+temp
+        s = s + ')'
+        return s
