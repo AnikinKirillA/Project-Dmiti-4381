@@ -154,7 +154,7 @@ def eval_rpn_p(tokens):
     stack = []
 
     for t in tokens:
-        if t in ['+', '-', '*', '/']:
+        if t in ['+', '-', '*', '/', '%']:
             b = stack.pop()
             a = stack.pop()
             if t == '+':
@@ -170,7 +170,12 @@ def eval_rpn_p(tokens):
                     if type(b) == Rational:
                         b = TRANS_Q_P(b)
                     stack.append(a + b)
-
+            elif t == '%':
+                if type(a) == int or type(b) == int:
+                    raise TypeError
+                if type(a) == Rational or type(b) == Rational:
+                    raise TypeError
+                stack.append(a % b)
             elif t == '-':
                 if type(a) == int:
                     a = TRANS_INT_Q(a)
