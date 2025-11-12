@@ -374,18 +374,19 @@ class Calculator:
         # Заглушка для демонстрации
         if self.calc_type == "natural":
             ans = eval_rpn_n(to_rpn(expr))
-            return f"Natural: {ans.show}"
+            return f"{ans.show()}"
         elif self.calc_type == "integer":
+            print(to_rpn(expr))
             ans = eval_rpn_z(to_rpn(expr))
-            return f"Integer: {ans.show}"
+            return f"{ans.show()}"
         elif self.calc_type == "rational":
             ans = eval_rpn_q(to_rpn(expr))
-            return f"Rational: {ans.show}"
+            return f"{ans.show()}"
         elif self.calc_type == "polynomial":
             ans = eval_rpn_p(to_rpn(expr))
             if type(ans) != Polynomial:
                 ans = TRANS_Q_P(ans)
-            return f"Polynomial: {ans.show()}"
+            return f"{ans.show()}"
 
         # но так же можно оставить старую обработку просто вставив ее СЮДА
         return 'answer'

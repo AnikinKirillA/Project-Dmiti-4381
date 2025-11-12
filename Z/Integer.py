@@ -175,7 +175,7 @@ class Integer:
             raise ValueError('Нельзя делить на ноль.')
 
         # Вместо // используем прямой вызов __truediv__
-        quotient = self.__truediv__(other)
+        quotient = self//other
 
         # Вычисляем произведение делителя и частного
         product = other * quotient

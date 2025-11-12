@@ -219,8 +219,10 @@ def eval_rpn_p(tokens):
         else:
             if is_number(t):
                 stack.append(TRANS_INT_Q(int(t)))
-            else:
+            elif 'x' in t:
                 stack.append(TRANS_STR_P(t))
+            else:
+                raise SyntaxError
     return stack[-1]
 
 
@@ -288,4 +290,3 @@ def eval_rpn_q(tokens):
 
     return stack[-1]
 
-print(eval_rpn_z(to_rpn('7//4')).show())
