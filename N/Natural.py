@@ -400,3 +400,7 @@ class Natural:
         """
         gcd = self.GCF_NN_N(other)
         return self * other // gcd
+
+    def show(self):
+        s="".join(list(map(str, self.A)))
+        return s

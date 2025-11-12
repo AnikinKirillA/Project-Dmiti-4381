@@ -1,6 +1,4 @@
 from N.Natural import Natural
-from TRANS.TRANS_N_Z import TRANS_N_Z
-from TRANS.TRANS_Z_N import TRANS_Z_N
 
 class Integer:
     def __init__(self, s, n, A):
@@ -10,7 +8,27 @@ class Integer:
 
     def ABS_Z_Z(self):
         """
-        Сделала: Имховик Наталья
+        Сделала: Имховиdef eval_rpn_n(tokens):
+    stack = []
+
+    for t in tokens:
+        if t in ['+', '-', '*', '/', '//', '%']:
+            b = stack.pop()
+            a = stack.pop()
+            if t == '+':
+                stack.append(a + b)
+            elif t == '-':
+                stack.append(a - b)
+            elif t == '*':
+                stack.append(a * b)
+            elif t == '//':
+                stack.append(a // b)
+            elif t == '%':
+                stack.append((a % b))
+        else:
+            stack.append(TRANS_INT_N(int(t)))
+
+    return stack[-1]к Наталья
         Определение абсолютной величины числа
         Возвращает целое
         """
@@ -123,7 +141,7 @@ class Integer:
 
         return Integer(sign, mul_result.len, mul_result.A)
 
-    def __truediv__(self, other):
+    def __floordiv__(self, other):
         """
         Сделал: Соколовский Артём
         Деление целых чисел (self / other).
@@ -157,7 +175,7 @@ class Integer:
             raise ValueError('Нельзя делить на ноль.')
 
         # Вместо // используем прямой вызов __truediv__
-        quotient = self.__truediv__(other)
+        quotient = self//other
 
         # Вычисляем произведение делителя и частного
         product = other * quotient
@@ -207,3 +225,9 @@ class Integer:
                 # Знак берем от второго числа
                 return Integer(other.s, sub_of_mods.len, sub_of_mods.A)
 
+    def show(self):
+        s=""
+        if self.s == 1:
+            s="-"
+        s=s+"".join(list(map(str, self.A)))
+        return s

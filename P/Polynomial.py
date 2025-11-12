@@ -4,6 +4,7 @@ from Q.Rational import Rational
 from TRANS.TRANS_N_Z import TRANS_N_Z
 
 
+
 class Polynomial:
     def __init__(self, m, C):
         self.m = m  # int степень многочлена
@@ -39,7 +40,7 @@ class Polynomial:
                 coeff2 = Rational(Integer(0, 0, [0]), Natural(0, [1]))
 
             # Складываем коэффициенты используя метод ADD_QQ_Q
-            sum_coeff = coeff1.ADD_QQ_Q(coeff2)
+            sum_coeff = coeff1 + coeff2
             result_coeffs.append(sum_coeff)
 
         # Убираем ведущие нули (в начале массива)
@@ -81,7 +82,7 @@ class Polynomial:
                 coeff2 = Rational(Integer(0, 0, [0]), Natural(0, [1]))
 
             # Вычитаем коэффициенты используя метод SUB_QQ_Q
-            diff_coeff = coeff1.SUB_QQ_Q(coeff2)
+            diff_coeff = coeff1-coeff2
             result_coeffs.append(diff_coeff)
 
         # Убираем ведущие нули (в начале массива)
@@ -101,7 +102,10 @@ class Polynomial:
 
         new_C = []  # массив для новых коэффициентов
         for i in range(len(self.C)):  # Проходимся по коэффициентам (Rational)
-            tmp = self.C[i] * q  # Умножаем их на заданное число q
+            if self.C[i].numerator.A == 0:
+                tmp = self.C[i]
+            else:
+                tmp = self.C[i] * q # Умножаем их на заданное число q
             new_C.append(tmp.RED_Q_Q())  # Cокращаем дробь и добавляем в массив коэффициентов
 
         return Polynomial(self.m, new_C)  # Формируем новый полином
@@ -159,16 +163,21 @@ class Polynomial:
         product = Polynomial(0, [Rational(Integer(0, 0, [0]), Natural(0, [1]))])
 
         """ 
-        Умножение первого полинома на каждый член второго полинома:
+        Умножение длинного полинома на каждый член короткого полинома:
         1) умножение на коэффициент каждого члена 
         2) домножение на x^(степень текущего члена), если его коэффициент не ноль
         """
-        for i in range(other.m + 1):
-            temp_poly = self.MUL_PQ_P(other.C[i])
-            if other.C[i].numerator.A != [0]:
-                temp_poly = temp_poly.MUL_Pxk_P(other.m - i)
+        if self.m <= other.m:
+            shorter, longer = self, other
+        else:
+            shorter, longer = other, self
 
-            product = product.__add__(temp_poly)  # Используем __add__ вместо +
+        for i in range(shorter.m + 1):
+            temp_poly = longer.MUL_PQ_P(shorter.C[i])
+            if shorter.C[i].numerator.A != [0]:
+                temp_poly = temp_poly.MUL_Pxk_P(shorter.m - i)
+
+            product = product + temp_poly
 
         return product
 
@@ -224,7 +233,7 @@ class Polynomial:
             B_scaled = Polynomial(B_shifted.m, B_scaled_coeffs)
 
             # Вычитаем (A = A - B_scaled)
-            A = A.__sub__(B_scaled)  # Используем __sub__ вместо -
+            A = A - B_scaled
 
             # Удаляем ведущие нули, если появились
             while len(A.C) > 1 and A.C[0].numerator.A == [0]:
@@ -238,7 +247,7 @@ class Polynomial:
 
         return Q
 
-    def MOD_PP_P(self, other):
+    def __mod__(self, other):
         """
         Сделала: Имховик Наталья
         Нахождение остатка от деления многочлена на
@@ -246,13 +255,13 @@ class Polynomial:
         Возвращает многочлен
         """
         # Находим частное от деления многочленов
-        quotient = self.__floordiv__(other)  # Используем __floordiv__ вместо //
+        quotient = self // other
 
         # Находим произведение частного и делителя
-        product = quotient.__mul__(other)  # Используем __mul__ вместо *
+        product = quotient * other
 
         # Остаток от деления равен разности делимого и полученного произведения
-        return self.__sub__(product)  # Используем __sub__ вместо -
+        return self - product
 
     def GCF_PP_P(self, other):
         """
@@ -271,7 +280,7 @@ class Polynomial:
             # B - многочлен с меньшей степенью
             if A.m < B.m:
                 A, B = B, A
-            R = A.MOD_PP_P(B)
+            R = A % B
             A, B = B, R
 
         # Нормализация: старший коэффициент равен 1
@@ -324,7 +333,7 @@ class Polynomial:
         """Сделал: Соколовский Артём - неприводимый многочлен"""
         dp = self.DER_P_P()
         g = self.GCF_PP_P(dp)
-        return self.__floordiv__(g)  # Используем __floordiv__ вместо //
+        return self // g
 
     def show(self):
         p = self
@@ -334,16 +343,10 @@ class Polynomial:
             return '0'
         for i in range(p.m + 1):
             temp = list(map(str, p.C[i].numerator.A))
-            if p.C[i].numerator.s == 1:
-                s = s + ' - '
             if int(temp[0]) != 0:
                 if i != 0 and p.C[i].numerator.s == 0:
                     s = s + ' + '
-                temp = "".join(temp)
-                s = s + temp
-                s = s + '/'
-                temp = list(map(str, p.C[i].denominator.A))
-                temp = "".join(temp)
+                temp = p.C[i].show()
                 s = s + temp
                 if i < p.m - 1:
                     s = s + 'x^' + str(p.m - i)
