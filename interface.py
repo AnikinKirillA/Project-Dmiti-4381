@@ -371,7 +371,6 @@ class Calculator:
         # Здесь будет происходить передача строки с выражением
         # в соответствующий модуль обработки
 
-        # Заглушка для демонстрации
         if self.calc_type == "natural":
             ans = eval_rpn_n(to_rpn(expr))
             return f"{ans.show()}"
@@ -388,7 +387,6 @@ class Calculator:
                 ans = TRANS_Q_P(ans)
             return f"{ans.show()}"
 
-        # но так же можно оставить старую обработку просто вставив ее СЮДА
         return 'answer'
 
     def back_to_selector(self):
