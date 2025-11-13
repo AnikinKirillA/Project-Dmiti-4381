@@ -3,149 +3,27 @@ from tkinter import messagebox
 from parser import *
 from P.Polynomial import Polynomial
 from TRANS.TRANS_Q_P import TRANS_Q_P
-'''
-class Calculator:
-    def __init__(self):
-        self.window = tk.Tk()
-        self.window.title("Калькулятор")
-        self.window.geometry("350x450")
-        self.window.resizable(False, False)
 
-        self.expression = ""
-
-        self.create_widgets()
-
-    def create_widgets(self):
-        self.display = tk.Entry(self.window, font=('Arial', 16), justify='right')
-        self.display.grid(row=0, column=0, columnspan=5, padx=10, pady=10, sticky='ew')
-
-        info_label = tk.Label(self.window, text="Введите выражение", font=('Arial', 10))
-        info_label.grid(row=1, column=0, columnspan=5, pady=(0, 10))
-
-        buttons = [
-            '7', '8', '9', '/', 'x²',
-            '4', '5', '6', '*', 'x³',
-            '1', '2', '3', '-', 'xⁿ',
-            '0', 'x', '=', '+', 'C',
-            '(', ')','<—', ' ', ' '
-        ]
-
-        row = 2
-        col = 0
-
-        for button in buttons:
-            if button == '=':
-                cmd = self.show_result
-            elif button == 'C':
-                cmd = self.clear
-            elif button == '<—':
-                cmd = self.backspace
-            elif button in ['x²', 'x³', 'xⁿ']:
-                cmd = lambda x=button: self.add_power(x)
-            elif button == ' ':
-                col += 1
-                if col > 4:
-                    col = 0
-                    row += 1
-                continue
-            else:
-                cmd = lambda x=button: self.add_to_expression(x)
-
-            tk.Button(
-                self.window,
-                text=button,
-                font=('Arial', 12),
-                command=cmd,
-                height=2,
-                width=6
-            ).grid(row=row, column=col, padx=2, pady=2, sticky='ew')
-
-            col += 1
-            if col > 4:
-                col = 0
-                row += 1
-
-        tk.Button(
-            self.window,
-            text="Ответ",
-            font=('Arial', 12),
-            command=self.show_result,
-            height=2,
-            bg='lightblue'
-        ).grid(row=row, column=0, columnspan=5, padx=2, pady=10, sticky='ew')
-
-    def add_to_expression(self, value):
-        """Добавляет символ к выражению"""
-        self.expression += str(value)
-        self.update_display()
-
-    def add_power(self, power_type):
-        """Добавляет степень переменной"""
-        if power_type == 'x²':
-            self.expression += '^2'
-        elif power_type == 'x³':
-            self.expression += '^3'
-        elif power_type == 'xⁿ':
-            self.expression += '^'
-        self.update_display()
-
-    def clear(self):
-        """Очищает выражение"""
-        self.expression = ""
-        self.update_display()
-
-    def backspace(self):
-        """Очищает последний символ выражения"""
-        self.expression = self.expression[:-1]
-        self.update_display()
-
-    def show_result(self):
-        """Получаем результат"""
-        if self.expression:
-            try:
-                # Вычисляем результат
-                result = self.process_expression(self.expression)
-                # Выводим результат в то же поле
-                self.clear()
-                self.expression = str(result)  # Обновляем выражение
-                self.update_display()
-            except Exception as e:
-                messagebox.showerror("Ошибка", f"Ошибка вычисления: {e}")
-        else:
-            messagebox.showwarning("Предупреждение", "Введите выражение")
-
-    def update_display(self):
-        """Обновляет отображение выражения"""
-        self.display.config(state='normal')
-        self.display.delete(0, tk.END)
-        self.display.insert(0, self.expression)
-        self.display.config(state='readonly')
-
-    def process_expression(self, expr):
-        """Обрабатывает выражение"""
-        print(expr)
-        print(to_rpn(expr))
-        ans = eval_rpn(to_rpn(expr))
-        if type(ans) != Polynomial:
-            ans = TRANS_Q_P(ans)
-        return ans.show()
-
-    def run(self):
-        """Запускает приложение"""
-        self.window.mainloop()
-
-
-s = Calculator().run()
-
-'''
 
 
 class CalculatorSelector:
     def __init__(self):
         self.window = tk.Tk()
         self.window.title("Выбор калькулятора")
-        self.window.geometry("350x450")
-        self.window.resizable(False, False)
+
+        screen_width = self.window.winfo_screenwidth()
+        screen_height = self.window.winfo_screenheight()
+
+
+        window_width = int(screen_width * 0.3)
+        window_height = int(screen_height * 0.5)
+
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+
+        self.window.geometry(f"{window_width}x{window_height}+{x}+{y}")
+        self.window.minsize(int(screen_width * 0.25), int(screen_height * 0.4))  # Минимальный размер
+        self.window.resizable(True, True)
 
         self.create_widgets()
 
@@ -211,35 +89,66 @@ class Calculator:
         self.calc_type = calc_type
         self.window = tk.Tk()
 
-        # Устанавливаем заголовок в зависимости от типа калькулятора
+        screen_width = self.window.winfo_screenwidth()
+        screen_height = self.window.winfo_screenheight()
+
+
+        window_width = int(screen_width * 0.22)
+        window_height = int(screen_height * 0.51)
+
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+
+        self.window.geometry(f"{window_width}x{window_height}+{x}+{y}")
+        self.window.minsize(window_width, window_height)
+        self.window.resizable(True, True)
+
+
         titles = {
             "natural": "Калькулятор натуральных чисел",
             "integer": "Калькулятор целых чисел",
             "rational": "Калькулятор рациональных чисел",
             "polynomial": "Калькулятор полиномов"
         }
-
         self.window.title(titles.get(calc_type, "Калькулятор"))
-        self.window.geometry("350x450")
-        self.window.resizable(False, False)
 
         self.expression = ""
 
         self.create_widgets()
 
     def create_widgets(self):
-        # Добавляем информацию о типе калькулятора
-        type_label = tk.Label(self.window,
+        # Создаем основной фрейм с правильным выравниванием
+        main_frame = tk.Frame(self.window)
+        main_frame.pack(expand=True, fill='both', padx=10, pady=10)
+
+        # Центрируем содержимое по горизонтали
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.columnconfigure(1, weight=1)
+        main_frame.columnconfigure(2, weight=1)
+        main_frame.columnconfigure(3, weight=1)
+        main_frame.columnconfigure(4, weight=1)
+
+        type_label = tk.Label(main_frame,
                               text=f"Тип: {self.get_calc_type_name()}",
                               font=('Arial', 10, 'bold'),
                               fg='blue')
-        type_label.grid(row=0, column=0, columnspan=5, pady=(10, 0))
+        type_label.grid(row=0, column=0, columnspan=5, pady=(10, 5), sticky='ew')
 
-        self.display = tk.Entry(self.window, font=('Arial', 16), justify='right')
-        self.display.grid(row=1, column=0, columnspan=5, padx=10, pady=10, sticky='ew')
+        self.display = tk.Entry(main_frame, font=('Arial', 16), justify='right')
+        self.display.grid(row=1, column=0, columnspan=5, padx=5, pady=5, sticky='ew')
 
-        info_label = tk.Label(self.window, text="Введите выражение", font=('Arial', 10))
+        info_label = tk.Label(main_frame, text="Введите выражение", font=('Arial', 10))
         info_label.grid(row=2, column=0, columnspan=5, pady=(0, 10))
+
+        button_frame = tk.Frame(main_frame)
+        button_frame.grid(row=3, column=0, columnspan=5, sticky='nsew', pady=10)
+
+        main_frame.rowconfigure(3, weight=1)
+
+        for i in range(5):
+            button_frame.columnconfigure(i, weight=1)
+        for i in range(5):
+            button_frame.rowconfigure(i, weight=1)
 
         buttons = [
             '7', '8', '9', '/', 'x²',
@@ -249,7 +158,7 @@ class Calculator:
             '(', ')', '%', '//', '<—'
         ]
 
-        row = 3
+        row = 0
         col = 0
 
         for button in buttons:
@@ -261,47 +170,50 @@ class Calculator:
                 cmd = self.backspace
             elif button in ['x²', 'x³', 'xⁿ']:
                 cmd = lambda x=button: self.add_power(x)
-            elif button == ' ':
-                col += 1
-                if col > 4:
-                    col = 0
-                    row += 1
-                continue
             else:
                 cmd = lambda x=button: self.add_to_expression(x)
 
-            tk.Button(
-                self.window,
+            btn = tk.Button(
+                button_frame,
                 text=button,
                 font=('Arial', 12),
-                command=cmd,
-                height=2,
-                width=6
-            ).grid(row=row, column=col, padx=2, pady=2, sticky='ew')
+                command=cmd
+            )
+
+            btn.grid(row=row, column=col, padx=2, pady=2, sticky='nsew')
 
             col += 1
             if col > 4:
                 col = 0
                 row += 1
 
-        # Кнопка для возврата к выбору калькулятора
-        tk.Button(
-            self.window,
+        bottom_frame = tk.Frame(main_frame)
+        bottom_frame.grid(row=4, column=0, columnspan=5, sticky='ew', pady=10)
+
+        bottom_frame.columnconfigure(0, weight=1)
+        bottom_frame.columnconfigure(1, weight=1)
+
+        back_btn = tk.Button(
+            bottom_frame,
             text="Назад к выбору",
             font=('Arial', 12),
             command=self.back_to_selector,
             height=2,
             bg='lightgreen'
-        ).grid(row=row, column=0, columnspan=2, padx=2, pady=10, sticky='ew')
+        )
+        back_btn.grid(row=0, column=0, sticky='ew', padx=(0, 5))
 
-        tk.Button(
-            self.window,
+        calc_btn = tk.Button(
+            bottom_frame,
             text="Вычислить",
             font=('Arial', 12),
             command=self.show_result,
             height=2,
             bg='lightblue'
-        ).grid(row=row, column=2, columnspan=3, padx=2, pady=10, sticky='ew')
+        )
+        calc_btn.grid(row=0, column=1, sticky='ew', padx=(5, 0))
+
+        self.update_display()
 
     def get_calc_type_name(self):
         """Возвращает читаемое название типа калькулятора"""
@@ -315,9 +227,16 @@ class Calculator:
 
     def add_to_expression(self, value):
         """Добавляет символ к выражению"""
-        if self.calc_type in ["natural", "integer", "rational"] and value[0] == 'x':
-            messagebox.showwarning("Ошибка", "В натуральном калькуляторе нельзя использовать переменную 'x'")
+        if self.calc_type in ["natural", "integer"] and len(value) == 1 and value[0] == '/' :
+            messagebox.showwarning("Ошибка", "В данном калькуляторе нельзя использовать операцию деления")
             return
+        elif self.calc_type in ["rational", "polynomial"] and value[:2] == '//':
+            messagebox.showwarning("Ошибка", "В данном калькуляторе нельзя использовать операцию целочисленного деления")
+            return
+        elif self.calc_type in ["rational"] and value[0] == '%':
+            messagebox.showwarning("Ошибка", "В данном калькуляторе нельзя использовать операцию остатка от деления")
+            return
+
         self.expression += str(value)
         self.update_display()
 
@@ -375,7 +294,6 @@ class Calculator:
             ans = eval_rpn_n(to_rpn(expr))
             return f"{ans.show()}"
         elif self.calc_type == "integer":
-            print(to_rpn(expr))
             ans = eval_rpn_z(to_rpn(expr))
             return f"{ans.show()}"
         elif self.calc_type == "rational":

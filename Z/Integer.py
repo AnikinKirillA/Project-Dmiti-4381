@@ -8,27 +8,7 @@ class Integer:
 
     def ABS_Z_Z(self):
         """
-        Сделала: Имховиdef eval_rpn_n(tokens):
-    stack = []
-
-    for t in tokens:
-        if t in ['+', '-', '*', '/', '//', '%']:
-            b = stack.pop()
-            a = stack.pop()
-            if t == '+':
-                stack.append(a + b)
-            elif t == '-':
-                stack.append(a - b)
-            elif t == '*':
-                stack.append(a * b)
-            elif t == '//':
-                stack.append(a // b)
-            elif t == '%':
-                stack.append((a % b))
-        else:
-            stack.append(TRANS_INT_N(int(t)))
-
-    return stack[-1]к Наталья
+        Сделала: Имховик Наталья
         Определение абсолютной величины числа
         Возвращает целое
         """
