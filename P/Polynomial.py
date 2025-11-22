@@ -120,7 +120,7 @@ class Polynomial:
         new_m = self.m + k  # новая степень полинома
 
         # добавляем k нулевых дробей в исходный массив коэффициентов
-        new_C = self.C + ([Rational(Integer(0, 1, [0]), Natural(1, [1]))] * k)
+        new_C = self.C + ([Rational(Integer(0, 0, [0]), Natural(0, [1]))] * k)
 
         return Polynomial(new_m, new_C)  # Возвращаем новый полином
 

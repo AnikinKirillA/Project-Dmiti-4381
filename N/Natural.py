@@ -305,7 +305,7 @@ class Natural:
 
         # Если делимое меньше делителя, возвращаем 0
         if self.COM_NN_D(other) == -1:
-            return Natural(1, [0])
+            return Natural(0, [0])
 
         # Определяем максимальную длину результата
         max_length = self.len - other.len + 1
