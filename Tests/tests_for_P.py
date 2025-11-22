@@ -387,7 +387,7 @@ class TestPolynomialOperations(unittest.TestCase):
         
         try:
             # Остаток от деления на 1
-            result = self.linear_poly.MOD_PP_P(self.one_poly)
+            result = self.linear_poly % self.one_poly
             self.assertEqual(result.C[0].numerator.A, [0])
             self.print_test_result("MOD_PP_P_by_one")
         except Exception as e:
@@ -396,7 +396,7 @@ class TestPolynomialOperations(unittest.TestCase):
 
         try:
             # Остаток от деления одинаковых многочленов
-            result = self.linear_poly.MOD_PP_P(self.linear_poly)
+            result = self.linear_poly % self.linear_poly
             self.assertEqual(result.C[0].numerator.A, [0])
             self.print_test_result("MOD_PP_P_same_polynomials")
         except Exception as e:

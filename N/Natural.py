@@ -283,7 +283,7 @@ class Natural:
                 k_digits = [int(d) for d in str(k)]
                 k_natural = Natural(len(k_digits) - 1, k_digits)
             other_shifted = other.MUL_Nk_N(k_natural)
-
+        #
         for digit in range(9, 0, -1):
             temp = other_shifted.MUL_ND_N(digit)
             if self.COM_NN_D(temp) != -1:
@@ -342,7 +342,6 @@ class Natural:
 
         return Natural(len(result_digits), result_digits)
 
-        # вместо MOD_NN_N (переопределяем Остаток от деления %)
 
     def __mod__(self, other):
         """

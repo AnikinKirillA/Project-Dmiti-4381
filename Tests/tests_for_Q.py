@@ -143,7 +143,7 @@ class TestRationalOperations(unittest.TestCase):
         
         try:
             # 1/2 + 1/3 = 5/6
-            result = self.half.ADD_QQ_Q(self.third)
+            result = self.half + self.third
             self.assertEqual(result.numerator.A, [5])
             self.assertEqual(result.numerator.s, 0)
             self.assertEqual(result.denominator.A, [6])
@@ -154,7 +154,7 @@ class TestRationalOperations(unittest.TestCase):
 
         try:
             # 1/2 + (-1/2) = 0/1
-            result = self.half.ADD_QQ_Q(self.negative_half)
+            result = self.half + self.negative_half
             self.assertEqual(result.numerator.A, [0])
             self.assertEqual(result.denominator.A, [1])
             self.print_test_result("ADD_QQ_Q_opposite_signs")
@@ -164,7 +164,7 @@ class TestRationalOperations(unittest.TestCase):
 
         try:
             # 0 + 1/2 = 1/2
-            result = self.zero_rational.ADD_QQ_Q(self.half)
+            result = self.zero_rational + self.half
             self.assertEqual(result.numerator.A, [1])
             self.assertEqual(result.denominator.A, [2])
             self.print_test_result("ADD_QQ_Q_with_zero")
@@ -178,7 +178,7 @@ class TestRationalOperations(unittest.TestCase):
         
         try:
             # 1/2 - 1/3 = 1/6
-            result = self.half.SUB_QQ_Q(self.third)
+            result = self.half - self.third
             self.assertEqual(result.numerator.A, [1])
             self.assertEqual(result.numerator.s, 0)
             self.assertEqual(result.denominator.A, [6])
@@ -189,7 +189,7 @@ class TestRationalOperations(unittest.TestCase):
 
         try:
             # 1/3 - 1/2 = -1/6
-            result = self.third.SUB_QQ_Q(self.half)
+            result = self.third - self.half
             self.assertEqual(result.numerator.A, [1])
             self.assertEqual(result.numerator.s, 1)
             self.assertEqual(result.denominator.A, [6])
@@ -200,7 +200,7 @@ class TestRationalOperations(unittest.TestCase):
 
         try:
             # 1/2 - 0 = 1/2
-            result = self.half.SUB_QQ_Q(self.zero_rational)
+            result = self.half - self.zero_rational
             self.assertEqual(result.numerator.A, [1])
             self.assertEqual(result.denominator.A, [2])
             self.print_test_result("SUB_QQ_Q_subtract_zero")
@@ -210,7 +210,7 @@ class TestRationalOperations(unittest.TestCase):
 
         try:
             # 0 - 1/2 = -1/2
-            result = self.zero_rational.SUB_QQ_Q(self.half)
+            result = self.zero_rational - self.half
             self.assertEqual(result.numerator.A, [1])
             self.assertEqual(result.numerator.s, 1)
             self.assertEqual(result.denominator.A, [2])
@@ -319,9 +319,9 @@ class TestRationalOperations(unittest.TestCase):
         
         try:
             # (1/2 + 1/3) × (2/3 - 1/6) = (5/6) × (1/2) = 5/12
-            sum_result = self.half.ADD_QQ_Q(self.third)  # 5/6
+            sum_result = self.half + self.third  # 5/6
             one_sixth = Rational(self.one_pos, Natural(0, [6]))
-            sub_result = self.two_thirds.SUB_QQ_Q(one_sixth)  # 1/2
+            sub_result = self.two_thirds - one_sixth  # 1/2
             result = sum_result * sub_result  # 5/12
             
             self.assertEqual(result.numerator.A, [5])

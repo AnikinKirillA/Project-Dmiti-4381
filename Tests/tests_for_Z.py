@@ -444,7 +444,7 @@ class TestIntegerOperations(unittest.TestCase):
         
         try:
             # Положительное ÷ положительное
-            result = self.ten_pos / self.five_pos
+            result = self.ten_pos // self.five_pos
             self.assertEqual(result.s, 0)
             self.assertEqual(result.A, [2])
             self.print_test_result("division_positive_by_positive")
@@ -454,7 +454,7 @@ class TestIntegerOperations(unittest.TestCase):
 
         try:
             # Положительное ÷ отрицательное
-            result = self.ten_pos / self.five_neg
+            result = self.ten_pos // self.five_neg
             self.assertEqual(result.s, 1)
             self.assertEqual(result.A, [2])
             self.print_test_result("division_positive_by_negative")
@@ -464,7 +464,7 @@ class TestIntegerOperations(unittest.TestCase):
 
         try:
             # Отрицательное ÷ положительное
-            result = self.ten_neg / self.five_pos
+            result = self.ten_neg // self.five_pos
             self.assertEqual(result.s, 1)
             self.assertEqual(result.A, [2])
             self.print_test_result("division_negative_by_positive")
@@ -474,7 +474,7 @@ class TestIntegerOperations(unittest.TestCase):
 
         try:
             # Отрицательное ÷ отрицательное
-            result = self.ten_neg / self.five_neg
+            result = self.ten_neg // self.five_neg
             self.assertEqual(result.s, 0)
             self.assertEqual(result.A, [2])
             self.print_test_result("division_negative_by_negative")
@@ -484,7 +484,7 @@ class TestIntegerOperations(unittest.TestCase):
 
         try:
             # Деление на единицу
-            result = self.ten_pos / self.one_pos
+            result = self.ten_pos // self.one_pos
             self.assertEqual(result.s, 0)
             self.assertEqual(result.A, [1, 0])
             self.print_test_result("division_by_one")
@@ -494,7 +494,7 @@ class TestIntegerOperations(unittest.TestCase):
 
         try:
             # Деление меньшего на большее
-            result = self.five_pos / self.ten_pos
+            result = self.five_pos // self.ten_pos
             self.assertEqual(result.s, 0)
             self.assertEqual(result.A, [0])
             self.print_test_result("division_smaller_by_larger")
@@ -505,7 +505,7 @@ class TestIntegerOperations(unittest.TestCase):
         try:
             # Деление на ноль
             with self.assertRaises(ZeroDivisionError):
-                self.ten_pos / self.zero_int
+                self.ten_pos // self.zero_int
             self.print_test_result("division_by_zero_error")
         except Exception as e:
             print(f"Ошибка в division_by_zero_error: {e}")
