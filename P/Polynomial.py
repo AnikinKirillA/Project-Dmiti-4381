@@ -223,7 +223,7 @@ class Polynomial:
             term_shifted = term.MUL_Pxk_P(k)
 
             # Прибавляем одночлен к частному (будущий ответ)
-            Q = Q.__add__(term_shifted)  # Используем __add__ вместо +
+            Q = Q + term_shifted
 
             # Умножаем делитель на factor и x^k
             B_shifted = B.MUL_Pxk_P(k)  # умножаем на x^k
